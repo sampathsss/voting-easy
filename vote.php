@@ -1,29 +1,47 @@
 <?php
 session_start();
-include('db.php');
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'voter') {
+    header("Location: index.php");
+    exit;
+}
+$conn = new mysqli("localhost", "root", "", "voting_db");
 
-if (!isset($_SESSION['userdata'])) {
-    header("Location: login.php");
-    exit();
+// Check if already voted
+$user_id = $_SESSION['user_id'];
+$check = $conn->query("SELECT * FROM votes WHERE voter_id = $user_id");
+if ($check->num_rows > 0) {
+    echo "<p>You have already voted.</p><a href='index.php'>Logout</a>";
+    exit;
 }
 
-$user = $_SESSION['userdata'];
-$voter_id = $user['id'];
-$selected_candidate = $_POST['candidate_id'];
-
-// Prevent double voting
-$check_status = mysqli_query($conn, "SELECT status FROM userdata WHERE id=$voter_id");
-$status = mysqli_fetch_assoc($check_status)['status'];
-
-if ($status == 1) {
-    echo "<script>alert('You have already voted!'); window.location='dashboard.php';</script>";
-} else {
-    // 1. Update candidate vote count
-    mysqli_query($conn, "UPDATE userdata SET votes = votes + 1 WHERE id = $selected_candidate");
-
-    // 2. Set voter's status to 1 (voted)
-    mysqli_query($conn, "UPDATE userdata SET status = 1 WHERE id = $voter_id");
-
-    echo "<script>alert('Vote submitted successfully!'); window.location='dashboard.php';</script>";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $candidate_id = $_POST['candidate'];
+    $stmt = $conn->prepare("INSERT INTO votes (voter_id, candidate_id) VALUES (?, ?)");
+    $stmt->bind_param("ii", $user_id, $candidate_id);
+    $stmt->execute();
+    echo "<p>Vote submitted successfully!</p><a href='index.php'>Logout</a>";
+    exit;
 }
+
+// Get candidate list
+$candidates = $conn->query("SELECT * FROM candidates");
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vote</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Cast Your Vote</h2>
+        <form method="POST">
+            <?php while ($row = $candidates->fetch_assoc()): ?>
+                <label><input type="radio" name="candidate" value="<?= $row['id'] ?>" required> <?= $row['name'] ?></label><br>
+            <?php endwhile; ?>
+            <button type="submit">Vote</button>
+        </form>
+    </div>
+</body>
+</html>
