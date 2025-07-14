@@ -30,7 +30,7 @@ if (isset($_POST['login'])) {
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form action="login.php" method="POST">
+        <form method="POST">
     </div>
 </body>
 </html>
