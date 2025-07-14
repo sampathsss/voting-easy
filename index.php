@@ -4,6 +4,7 @@
 <head>
     <title>Voting System - Login</title>
     <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
 </head>
 <body>
     <div class="form-container">
