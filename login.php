@@ -30,21 +30,7 @@ if (isset($_POST['login'])) {
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form method="POST">
-            <label>Username:</label>
-            <input type="text" name="username" required>
-
-            <label>Password:</label>
-            <input type="password" name="password" required>
-
-            <label>Login as:</label>
-            <select name="standard" required>
-                <option value="voter">Voter</option>
-                <option value="candidate">Candidate</option>
-            </select>
-
-            <button type="submit" name="login">Login</button>
-        </form>
+        <form action="login.php" method="POST">
     </div>
 </body>
 </html>
