@@ -10,7 +10,6 @@
 
 </head>
 <body class="bg-dark">
-    <h1 class= "text-info text-center p-3">Voting System</h1>
     <div class="bg-info py-4">
         <h2 class="text-center">Login</h2>
         <div class="container text-center"> 
