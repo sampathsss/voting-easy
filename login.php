@@ -5,23 +5,22 @@ require 'db.php';
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-$stmt = $pdo->prepare("SELECT * FROM userdata WHERE username = ?");
-$stmt->execute([$username]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt = $conn->prepare("SELECT * FROM userdata WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 if ($user && password_verify($password, $user['password'])) {
-    $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['role'] = $user['role'];
 
     if ($user['role'] === 'voter') {
         header("Location: vote.php");
-    } elseif ($user['role'] === 'candidate') {
-        header("Location: dashboard.php");
     } else {
-        echo "Unknown role.";
+        header("Location: dashboard.php");
     }
 } else {
-    echo "Invalid username or password.";
+    echo "❌ Invalid login.";
 }
 ?>
