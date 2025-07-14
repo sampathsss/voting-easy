@@ -1,13 +1,12 @@
 <?php
 $host = "sql12.freesqldatabase.com";
-$dbname = "sql12789971";
 $user = "sql12789971";
-$pass = "ueh9xCfYYq";
+$password = "ueh9xCfYYq";
+$database = "sql12789971";
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("❌ Database connection failed: " . $e->getMessage());
+$conn = new mysqli($host, $user, $password, $database);
+
+if ($conn->connect_error) {
+    die("❌ Database connection failed: " . $conn->connect_error);
 }
 ?>
