@@ -4,10 +4,9 @@ $conn = new mysqli("localhost", "root", "", "voting_db");
 
 $username = $_POST['username'];
 $password = $_POST['password'];
-$role = $_POST['role'];
 
-$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND role = ?");
-$stmt->bind_param("ss", $username, $role);
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -16,10 +15,19 @@ if ($result->num_rows === 1) {
     if (password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['role'] = $user['role'];
-        header("Location: " . ($role === "voter" ? "vote.php" : "dashboard.php"));
+
+        if ($user['role'] === 'voter') {
+            header("Location: vote.php");
+        } else if ($user['role'] === 'candidate') {
+            header("Location: dashboard.php");
+        } else {
+            $_SESSION['error'] = "Unknown user role.";
+            header("Location: index.php");
+        }
         exit;
     }
 }
 
-$_SESSION['error'] = "Invalid credentials.";
+$_SESSION['error'] = "Invalid username or password.";
 header("Location: index.php");
+exit;
