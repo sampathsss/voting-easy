@@ -2,17 +2,15 @@
 session_start();
 include("db.php");
 
-// Only redirect if user is already logged in
 if (isset($_SESSION['userdata'])) {
     header("Location: vote.php");
     exit();
 }
 
-// Handle login POST request
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $standard = $_POST['standard'];
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $standard = $_POST['standard'] ?? '';
 
     $query = "SELECT * FROM userdata WHERE username='$username' AND password='$password' AND standard='$standard'";
     $result = mysqli_query($conn, $query);
@@ -22,7 +20,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: vote.php");
         exit();
     } else {
-        echo "<script>alert('Invalid login credentials');</script>";
+        echo "<script>alert('Invalid login');</script>";
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        <input type="password" name="password" placeholder="Password" required><br><br>
+
+        <select name="standard" required>
+            <option value="">Select role</option>
+            <option value="voter">Voter</option>
+            <option value="candidate">Candidate</option>
+        </select><br><br>
+
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
