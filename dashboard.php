@@ -1,42 +1,36 @@
 <?php
 session_start();
-include('db.php');
-
-if (!isset($_SESSION['userdata'])) {
-    header("Location: login.php");
-    exit();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'candidate') {
+    header("Location: index.php");
+    exit;
 }
 
-$user = $_SESSION['userdata'];
+$conn = new mysqli("localhost", "root", "", "voting_db");
 
-// Fetch all candidates
-$candidates = mysqli_query($conn, "SELECT * FROM userdata WHERE standard='candidate'");
+$results = $conn->query("
+    SELECT c.name, COUNT(v.id) AS votes
+    FROM candidates c
+    LEFT JOIN votes v ON c.id = v.candidate_id
+    GROUP BY c.id
+");
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <title>Dashboard - Results</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Welcome, <?php echo $user['username']; ?>!</h2>
-        <p style="text-align:center; margin-bottom: 20px;">
-            You are logged in as: <strong><?php echo $user['standard']; ?></strong>
-        </p>
-
-        <h3>Select a Candidate:</h3>
-        <form method="POST" action="vote.php">
-            <?php while ($row = mysqli_fetch_array($candidates)) { ?>
-                <div class="candidate">
-                    <span><?php echo $row['username']; ?></span>
-                    <input type="radio" class="radio" name="candidate_id" value="<?php echo $row['id']; ?>" required>
-                </div>
-            <?php } ?>
-            <button type="submit">Vote</button>
-        </form>
+    <div class="form-container">
+        <h2>Vote Results</h2>
+        <table>
+            <tr><th>Candidate</th><th>Votes</th></tr>
+            <?php while ($row = $results->fetch_assoc()): ?>
+                <tr><td><?= $row['name'] ?></td><td><?= $row['votes'] ?></td></tr>
+            <?php endwhile; ?>
+        </table>
+        <a href="index.php">Logout</a>
     </div>
 </body>
 </html>
