@@ -1,23 +1,55 @@
 <?php
 session_start();
-require 'db.php';
+include("db.php");
 
-$username = $_POST['username'] ?? '';
-$password = $_POST['password'] ?? '';
-$mobile = $_POST['mobile'] ?? '';
-
-// Avoid echoing anything before header
-$stmt = $conn->prepare("SELECT * FROM userdata WHERE username = ? AND mobile = ?");
-$stmt->bind_param("ss", $username, $mobile);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
-if ($user && $password === $user['password']) {
-    $_SESSION['username'] = $user['username'];
-    header("Location: dashboard.php");
+if (!isset($_SESSION['userdata'])) {
+    header("Location: login.php");
     exit();
-} else {
-    echo "❌ Invalid login.";
 }
+
+$userdata = $_SESSION['userdata'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['candidate_id'])) {
+        $candidate_id = $_POST['candidate_id'];
+        
+        // Give the vote to selected candidate
+        mysqli_query($conn, "UPDATE userdata SET votes = votes + 1 WHERE id = '$candidate_id'");
+        
+        // Mark user as voted
+        mysqli_query($conn, "UPDATE userdata SET status = 1 WHERE id = '{$userdata['id']}'");
+        
+        echo "<script>alert('Vote submitted successfully!'); window.location = 'vote.php';</script>";
+        exit();
+    } else {
+        echo "<script>alert('Invalid selection!');</script>";
+    }
+}
+
+// Fetch candidates
+$candidates = mysqli_query($conn, "SELECT * FROM userdata WHERE standard = 'candidate'");
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vote</title>
+</head>
+<body>
+<h2>Welcome, <?php echo $userdata['username']; ?> (<?php echo $userdata['standard']; ?>)</h2>
+
+<?php if ($userdata['status'] == 1): ?>
+    <p><strong>You have already voted. Thank you!</strong></p>
+<?php else: ?>
+    <form method="POST">
+        <?php while ($row = mysqli_fetch_assoc($candidates)) { ?>
+            <label>
+                <input type="radio" name="candidate_id" value="<?php echo $row['id']; ?>" required>
+                <?php echo $row['username']; ?>
+            </label><br><br>
+        <?php } ?>
+        <input type="submit" value="Submit Vote">
+    </form>
+<?php endif; ?>
+</body>
+</html>
