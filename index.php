@@ -10,10 +10,19 @@
     <div class="form-container">
         <h2>Login</h2>
         <form action="login.php" method="POST">
-            <input type="text" name="username" placeholder="Username" required><br>
-            <input type="password" name="password" placeholder="Password" required><br>
-            <button type="submit">Login</button>
-        </form>
+  <h2>Login</h2>
+
+  <label>Username</label>
+  <input type="text" name="username" required><br><br>
+
+  <label>Password</label>
+  <input type="password" name="password" required><br><br>
+
+  <label>Mobile Number</label>
+  <input type="text" name="mobile" required><br><br>
+
+  <button type="submit">Login</button>
+</form>
         <?php
         if (isset($_SESSION['error'])) {
             echo "<p class='error'>{$_SESSION['error']}</p>";
