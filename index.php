@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Voting System</title>
+    <title>Voting System - Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,12 @@
             </select><br>
             <button type="submit">Login</button>
         </form>
-        <?php if (isset($_SESSION['error'])) { echo "<p class='error'>{$_SESSION['error']}</p>"; unset($_SESSION['error']); } ?>
+        <?php
+        if (isset($_SESSION['error'])) {
+            echo "<p class='error'>{$_SESSION['error']}</p>";
+            unset($_SESSION['error']);
+        }
+        ?>
     </div>
 </body>
 </html>
