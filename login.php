@@ -1,43 +1,25 @@
 <?php
 session_start();
-include("db.php");
+$conn = new mysqli("localhost", "root", "", "voting_db");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $standard = $_POST['standard'];
+$username = $_POST['username'];
+$password = $_POST['password'];
+$role = $_POST['role'];
 
-    $query = "SELECT * FROM userdata WHERE username='$username' AND password='$password' AND standard='$standard'";
-    $result = mysqli_query($conn, $query);
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND role = ?");
+$stmt->bind_param("ss", $username, $role);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    if (mysqli_num_rows($result) > 0) {
-        $userdata = mysqli_fetch_array($result);
-        $_SESSION['userdata'] = $userdata;
-        echo "<script>window.location = 'dashboard.php';</script>";
-    } else {
-        echo "<script>alert('Invalid login!');</script>";
+if ($result->num_rows === 1) {
+    $user = $result->fetch_assoc();
+    if (password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
+        header("Location: " . ($role === "voter" ? "vote.php" : "dashboard.php"));
+        exit;
     }
 }
-?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-
-<h2>Login Page</h2>
-
-<form method="POST"> <!-- ✅ form submits to the same file -->
-    <input type="text" name="username" placeholder="Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <select name="standard">
-        <option value="voter">Voter</option>
-        <option value="candidate">Candidate</option>
-    </select><br><br>
-    <input type="submit" name="loginbtn" value="Login">
-</form>
-
-</body>
-</html>
+$_SESSION['error'] = "Invalid credentials.";
+header("Location: index.php");
