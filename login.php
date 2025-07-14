@@ -1,21 +1,21 @@
 <?php
 session_start();
-include('db.php');
+include("db.php");
 
-if (isset($_POST['login'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $standard = $_POST['standard'];
 
-    $sql = "SELECT * FROM userdata WHERE username='$username' AND password='$password' AND standard='$standard'";
-    $result = mysqli_query($conn, $sql);
+    $query = "SELECT * FROM userdata WHERE username='$username' AND password='$password' AND standard='$standard'";
+    $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
         $userdata = mysqli_fetch_array($result);
         $_SESSION['userdata'] = $userdata;
-        header("Location: dashboard.php");
+        echo "<script>window.location = 'dashboard.php';</script>";
     } else {
-        echo "<script>alert('Login failed. Invalid credentials.')</script>";
+        echo "<script>alert('Invalid login!');</script>";
     }
 }
 ?>
@@ -23,28 +23,21 @@ if (isset($_POST['login'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login - Voting System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <title>Login</title>
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form method="POST">
-            <label>Username:</label>
-            <input type="text" name="username" required>
 
-            <label>Password:</label>
-            <input type="password" name="password" required>
+<h2>Login Page</h2>
 
-            <label>Login as:</label>
-            <select name="standard" required>
-                <option value="voter">Voter</option>
-                <option value="candidate">Candidate</option>
-            </select>
+<form method="POST"> <!-- ✅ form submits to the same file -->
+    <input type="text" name="username" placeholder="Username" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <select name="standard">
+        <option value="voter">Voter</option>
+        <option value="candidate">Candidate</option>
+    </select><br><br>
+    <input type="submit" name="loginbtn" value="Login">
+</form>
 
-            <button type="submit" name="login">Login</button>
-        </form>
-    </div>
 </body>
 </html>
