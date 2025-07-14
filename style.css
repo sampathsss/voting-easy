@@ -1,43 +1,74 @@
+/* Reset default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    padding: 20px;
 }
 
 .form-container {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
+    transition: all 0.3s ease-in-out;
 }
 
-input, button {
+.form-container:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.form-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 26px;
+}
+
+input[type="text"],
+input[type="password"],
+button {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 12px 15px;
+    margin: 12px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #4facfe;
+    outline: none;
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #4facfe;
     color: white;
-    border: none;
+    font-weight: bold;
     cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #00c3ff;
 }
 
 .error {
-    color: red;
-    font-size: 0.9em;
+    color: #ff3333;
+    font-size: 14px;
+    margin-top: 10px;
 }
