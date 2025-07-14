@@ -36,6 +36,7 @@ $username = $_SESSION['username'];
   <div class="box">
     <h2>Welcome, <?= htmlspecialchars($username) ?>!</h2>
     <p>You are now logged in.</p>
+      <p><a href="vote.php">🗳️ Go Vote</a></p>
     <a href="logout.php">Logout</a>
   </div>
 </body>
